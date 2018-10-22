@@ -8,7 +8,7 @@ Vulnerable to CSRF don't use in production
 
 1. Start a mongodb server
 
-2. Put in the URI in the MONGO_URI field of ";azyAPIconfig.py"
+2. Put in the URI in the MONGO_URI field of "lazyAPIconfig.py"
 
 3. Run setup.sh (or setup.bat on Windows)
 
