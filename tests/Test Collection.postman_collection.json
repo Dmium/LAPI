@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3f220cf8-c6d4-49c1-afc1-58b000d83a1e",
+		"_postman_id": "ac012c81-37fd-4b3b-b234-d59d70e65c0a",
 		"name": "Test Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -356,6 +356,51 @@
 					"path": [
 						"test",
 						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test get_projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b9fc63f9-8a3a-4521-b3b2-0d23485c3f6f",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json().test).to.have.length(1);",
+							"});",
+							"",
+							"pm.test(\"response has correct content\", function() {",
+							"    pm.expect(pm.response.json().test[0]).is.equal(\"person\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:5000/get_projects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_projects"
 					]
 				}
 			},
