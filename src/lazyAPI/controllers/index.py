@@ -4,14 +4,13 @@ from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
-@app.route('/config/init/')
-def init_database():
-    print("Creating tables")
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
+@app.route('/config/init/<project>')
+def init_database(project):
+    for coll in mongo.db.collection_names():
+        print(coll)
+        if coll.startswith(project):
+            mongo.db[coll].drop()
     return 'Init complete'
-
 
 @app.route('/<project>/<type>/', methods=['POST'])
 def create(project, type):
@@ -38,8 +37,7 @@ def update(project, type, oid): # replace appropriate fields
     mongo.db[str(project) + '/' + str(type)].update_one({'_id':ObjectId(str(oid))}, {"$set": request_dict})
     return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
 
-@app.route('/<project>/<type>/<oid>', methods=['DELETE'])
+@app.route('/<project>/<type>/<oid>/', methods=['DELETE'])
 def delete(project, type, oid):
     mongo.db[str(project) + '/' + str(type)].delete_one({'_id':ObjectId(str(oid))})
     return Response("", status=200, mimetype='application/json')
-
