@@ -6,4 +6,4 @@ app.config.from_object('lazyAPIconfig')
 CORS(app)
 mongo = PyMongo(app)
 
-from lazyAPI.controllers import index
+from lazyAPI.controllers import index, generate
