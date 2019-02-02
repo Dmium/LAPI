@@ -1,0 +1,387 @@
+{
+	"info": {
+		"_postman_id": "3f220cf8-c6d4-49c1-afc1-58b000d83a1e",
+		"name": "Test Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Init",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "543dfe12-2bdd-4328-9f98-eeb010e02732",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/config/init/test",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"config",
+						"init",
+						"test"
+					]
+				},
+				"description": "Nukes the test database"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Empty Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76feedfd-2796-484f-9996-3226814e34cb",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json()).to.have.length(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/test/person",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0087b640-99c2-4ac2-b2fb-7622588abbdb",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response has correct contents\", function() {",
+							"    pm.expect(pm.response.json().first_name).to.equal(\"Toby\");",
+							"    pm.expect(pm.response.json().last_name).to.equal(\"Such\");",
+							"    pm.expect(pm.response.json().age).to.equal(20);",
+							"})",
+							"",
+							"pm.globals.set(\"oid\", pm.response.json()._id.$oid);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"first_name\": \"Toby\",\n\t\"last_name\": \"Such\",\n\t\"age\": 20\n}"
+				},
+				"url": {
+					"raw": "localhost:5000/test/person",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76bc0726-dcb1-40a7-9009-d99fb84e7d27",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json()).to.have.length(1);",
+							"});",
+							"",
+							"pm.test(\"response has the correct contents\", function() {",
+							"    pm.expect(pm.response.json()[0].first_name).to.equal(\"Toby\");",
+							"    pm.expect(pm.response.json()[0].last_name).to.equal(\"Such\");",
+							"    pm.expect(pm.response.json()[0].age).to.equal(20);",
+							"    pm.expect(pm.response.json()[0]._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/test/person",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Show",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b0e19de-d1be-4b2f-82b0-170d0adfb3ef",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response has the correct contents\", function() {",
+							"    pm.expect(pm.response.json().first_name).to.equal(\"Toby\");",
+							"    pm.expect(pm.response.json().last_name).to.equal(\"Such\");",
+							"    pm.expect(pm.response.json().age).to.equal(20);",
+							"    pm.expect(pm.response.json()._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/test/person/{{oid}}",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person",
+						"{{oid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Put",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a1457ff-f4d7-4e63-94e6-1f3e4965f25e",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"response has the correct contents\", function() {",
+							"    pm.expect(pm.response.json().first_name).to.equal(\"James\");",
+							"    pm.expect(pm.response.json().last_name).to.equal(\"Such\");",
+							"    pm.expect(pm.response.json().age).to.equal(20);",
+							"    pm.expect(pm.response.json()._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"first_name\": \"James\"\n}"
+				},
+				"url": {
+					"raw": "localhost:5000/test/person/{{oid}}",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person",
+						"{{oid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8be398cf-52f9-48f7-a647-81da90654cfb",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/test/person/{{oid}}",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person",
+						"{{oid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Get After Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "77717e53-5055-4335-b34b-28ff46dd3dfe",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json()).to.have.length(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:5000/test/person",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"test",
+						"person"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bd19d03b-8c13-4ac4-a83c-2f3b5e9c8450",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d07ef4f0-2ac7-424b-bc1b-01ca71085545",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
