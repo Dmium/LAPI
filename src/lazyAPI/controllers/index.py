@@ -1,5 +1,5 @@
 from lazyAPI import app, mongo
-from flask import jsonify, request, Response
+from flask import jsonify, request, Response, render_template
 from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
@@ -12,6 +12,9 @@ def init_database():
     db.session.commit()
     return 'Init complete'
 
+@app.route('/')
+def hello_word():
+    return render_template("index.html")
 
 @app.route('/<project>/<type>', methods=['POST'])
 def create(project, type):
