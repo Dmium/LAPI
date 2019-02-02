@@ -1,13 +1,31 @@
 from lazyAPI import app, mongo
-from flask import jsonify, request, Response
+from flask import Flask, jsonify, request, Response, render_template
 from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
+@app.route('/get_projects')
+def get_projects():
+    project_routes = {}
+    for coll in mongo.db.collection_names():
+       project_name = coll.split("/")[0]
+       route = coll.split("/")[1]
+       print(project_routes)
+       if project_name in project_routes:
+           project_routes[project_name].append(route)
+       else:
+           project_routes[project_name] = [route]
+    response = project_routes
+    return jsonify(response) 
+
+@app.route('/')
+def index():
+    get_projects()
+    return render_template("index.html")
+
 @app.route('/config/init/<project>')
 def init_database(project):
     for coll in mongo.db.collection_names():
-        print(coll)
         if coll.startswith(project):
             mongo.db[coll].drop()
     return 'Init complete'
