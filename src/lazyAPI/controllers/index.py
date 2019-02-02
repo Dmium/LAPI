@@ -37,3 +37,9 @@ def update(project, type, oid): # replace appropriate fields
     request_dict = request.get_json()
     mongo.db[str(project) + '/' + str(type)].update_one({'_id':ObjectId(str(oid))}, {"$set": request_dict})
     return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
+
+@app.route('/<project>/<type>/<oid>', methods=['DELETE'])
+def delete(project, type, oid):
+    mongo.db[str(project) + '/' + str(type)].delete_one({'_id':ObjectId(str(oid))})
+    return Response("", status=200, mimetype='application/json')
+
