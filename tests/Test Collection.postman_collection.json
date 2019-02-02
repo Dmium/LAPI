@@ -1,11 +1,12 @@
 {
 	"info": {
-		"_postman_id": "ac012c81-37fd-4b3b-b234-d59d70e65c0a",
+		"_postman_id": "02e0dd71-34b0-44f3-9ac6-a2e028b2be16",
 		"name": "Test Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
+			"_postman_id": "842341c9-a64b-466f-a16e-809f16ed99ab",
 			"name": "Init",
 			"event": [
 				{
@@ -45,6 +46,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "ba209a6d-622d-4140-9263-976d2841009a",
 			"name": "Test Empty Get",
 			"event": [
 				{
@@ -86,6 +88,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "bb01d4b3-69dd-45f2-a2bd-dacf7fe3269e",
 			"name": "Test Post",
 			"event": [
 				{
@@ -138,6 +141,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "7958c278-bddd-47dc-90d1-966a62d8caec",
 			"name": "Test Get",
 			"event": [
 				{
@@ -186,6 +190,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "ab81b27d-ed40-49c6-956d-32520614078c",
 			"name": "Test Show",
 			"event": [
 				{
@@ -231,6 +236,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "d0b07f13-d6d8-4bbb-bbf5-028162f75b86",
 			"name": "Test Put",
 			"event": [
 				{
@@ -283,6 +289,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "bd5e7120-5840-4fb0-bda7-f368957c12d2",
 			"name": "Test Delete",
 			"event": [
 				{
@@ -321,6 +328,7 @@
 			"response": []
 		},
 		{
+			"_postman_id": "30ee4cb3-b741-4c67-8dd0-10b4d2e2799e",
 			"name": "Test Get After Delete",
 			"event": [
 				{
@@ -362,26 +370,27 @@
 			"response": []
 		},
 		{
+			"_postman_id": "4e0fef23-13b0-4b72-9e17-7555c712867c",
 			"name": "Test get_projects",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "b9fc63f9-8a3a-4521-b3b2-0d23485c3f6f",
+						"id": "04d83cdd-ef98-4cd0-8e96-d3cf862cb222",
+						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"response is ok\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"pm.test(\"resonse is correct length\", function() {",
-							"    pm.expect(pm.response.json().test).to.have.length(1);",
+							"    pm.expect(pm.response.json()).to.have.length(1);",
 							"});",
 							"",
 							"pm.test(\"response has correct content\", function() {",
-							"    pm.expect(pm.response.json().test[0]).is.equal(\"person\");",
+							"    pm.expect(pm.response.json()[0]).is.equal(\"test\");",
 							"});"
-						],
-						"type": "text/javascript"
+						]
 					}
 				}
 			],
@@ -401,6 +410,50 @@
 					"port": "5000",
 					"path": [
 						"get_projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"_postman_id": "8ce0f81e-0875-4241-93b5-42a082295a10",
+			"name": "Test get_types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e18936a9-f7de-4c94-b40f-b35be491ab4b",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json()).to.have.length(1);",
+							"});",
+							"",
+							"pm.test(\"response has correct content\", function() {",
+							"    pm.expect(pm.response.json()[0]).is.equal(\"person\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:5000/get_types/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_types",
+						"test"
 					]
 				}
 			},
