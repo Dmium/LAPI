@@ -32,13 +32,15 @@ def generate(project):
                     if not(key in attributes) and not(key == "_id"):
                         attributes.append(key)
                         types.append(type(value))
-            print(attributes)
-            print(types)
             for i in range(len(types)):
                 if str(types[i]) == "<class 'str'>":
-                    types[i] = "String(100)"
+                    types[i] = "Text"
                 elif str(types[i]) == "<class 'int'>":
                     types[i] = "Integer"
+                elif str(types[i]) == "<class 'float'>":
+                    types[i] = "Float"
+                elif str(types[i]) == "<class 'bool'>":
+                    types[i] = "Boolean"
 
             for i in range(len(attributes)):
                 f.write("    " + attributes[i] + " = db.Column(db." + str(types[i]) + ")\n")
