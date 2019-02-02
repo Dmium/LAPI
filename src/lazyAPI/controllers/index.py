@@ -25,7 +25,11 @@ def read(project, type, oid):
 
 @app.route('/<project>/<type>', methods=['GET'])
 def read_all(project, type):
-    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find()), status=200, mimetype='application/json')
+    request_dict = request.get_json()
+    if(request_dict == None):
+        return Response(dumps(mongo.db[str(project) + '/' + str(type)].find()), status=200, mimetype='application/json')
+    else:
+        return Response(dumps(mongo.db[str(project) + '/' + str(type)].find(request_dict)), status=200, mimetype='application/json')
 
 @app.route('/<project>/<type>/<oid>', methods=['PUT'])
 def update(project, type, oid): # replace appropriate fields
