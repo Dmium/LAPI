@@ -21,7 +21,8 @@ def create(project, type):
 
 @app.route('/<project>/<type>/<oid>', methods=['GET'])
 def read(project, type, oid):
-    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": oid})), status=200, mimetype='application/json')
+    print(oid)
+    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
 
 @app.route('/<project>/<type>', methods=['GET'])
 def read_all(project, type):
