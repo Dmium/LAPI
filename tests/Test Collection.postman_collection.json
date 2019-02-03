@@ -1,12 +1,11 @@
 {
 	"info": {
-		"_postman_id": "02e0dd71-34b0-44f3-9ac6-a2e028b2be16",
+		"_postman_id": "39ccc5ad-31b0-4c74-8ca7-6d110b592dba",
 		"name": "Test Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"_postman_id": "842341c9-a64b-466f-a16e-809f16ed99ab",
 			"name": "Init",
 			"event": [
 				{
@@ -46,7 +45,6 @@
 			"response": []
 		},
 		{
-			"_postman_id": "ba209a6d-622d-4140-9263-976d2841009a",
 			"name": "Test Empty Get",
 			"event": [
 				{
@@ -74,21 +72,20 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"_postman_id": "bb01d4b3-69dd-45f2-a2bd-dacf7fe3269e",
 			"name": "Test Post",
 			"event": [
 				{
@@ -127,21 +124,20 @@
 					"raw": "{\n\t\"first_name\": \"Toby\",\n\t\"last_name\": \"Such\",\n\t\"age\": 20\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"_postman_id": "7958c278-bddd-47dc-90d1-966a62d8caec",
 			"name": "Test Get",
 			"event": [
 				{
@@ -176,21 +172,20 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"_postman_id": "ab81b27d-ed40-49c6-956d-32520614078c",
 			"name": "Test Show",
 			"event": [
 				{
@@ -221,14 +216,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -236,7 +231,6 @@
 			"response": []
 		},
 		{
-			"_postman_id": "d0b07f13-d6d8-4bbb-bbf5-028162f75b86",
 			"name": "Test Put",
 			"event": [
 				{
@@ -274,14 +268,14 @@
 					"raw": "{\n\t\"first_name\": \"James\"\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -289,7 +283,6 @@
 			"response": []
 		},
 		{
-			"_postman_id": "bd5e7120-5840-4fb0-bda7-f368957c12d2",
 			"name": "Test Delete",
 			"event": [
 				{
@@ -313,14 +306,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -328,7 +321,6 @@
 			"response": []
 		},
 		{
-			"_postman_id": "30ee4cb3-b741-4c67-8dd0-10b4d2e2799e",
 			"name": "Test Get After Delete",
 			"event": [
 				{
@@ -356,21 +348,20 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"_postman_id": "4e0fef23-13b0-4b72-9e17-7555c712867c",
 			"name": "Test get_projects",
 			"event": [
 				{
@@ -416,7 +407,6 @@
 			"response": []
 		},
 		{
-			"_postman_id": "8ce0f81e-0875-4241-93b5-42a082295a10",
 			"name": "Test get_types",
 			"event": [
 				{
@@ -443,7 +433,10 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "http://localhost:5000/get_types/test",
 					"protocol": "http",
