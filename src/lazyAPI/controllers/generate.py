@@ -21,7 +21,7 @@ def generate(project):
             modelname = coll[(coll.find("/")+1):]
             f = open(path + project + "/models/" + modelname + ".py", "w+")
             f.write("from " + project + " import db, ma\n\n")
-            f.write("class " + modelname.title() + "(db.Model):\n")
+            f.write("class " + modelname + "(db.Model):\n")
             f.write("    __tablename__ = \"" + modelname + "\"\n")
             f.write("    id = db.Column(db.Integer, primary_key = True)\n")
             attributes = []
@@ -43,9 +43,9 @@ def generate(project):
 
             for i in range(len(attributes)):
                 f.write("    " + attributes[i] + " = db.Column(db." + str(types[i]) + ")\n")
-            f.write("\nclass " + modelname.title() + "_Schema(ma.ModelSchema):")
+            f.write("\nclass " + modelname + "_Schema(ma.ModelSchema):")
             f.write("\n    class Meta:")
-            f.write("\n        fields = ('id',)\n\n")
+            f.write("\n        model = " + modelname + "\n\n")
             f.write(modelname + "_schema" + " = " + modelname.title() + "_Schema()\n")
             f.write(modelname + "_schemas" + " = " + modelname.title() + "_Schema(many=True)\n")
             f.close()
