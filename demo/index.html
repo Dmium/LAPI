@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Blogger!</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script>
+			function sendBlog() {
+				$.ajax({
+					url: 'http://localhost:5000/blogger/Blog',
+					method: 'POST',
+					data: JSON.stringify({
+						'name':$('#name').val(),
+						'blog_text':$('#blog_text').val()
+					}),
+					contentType: "application/json",
+					success: function(data, status) {
+						console.log('Submitted');
+						location.reload(); 
+					}
+				});
+			}
+
+			function getBlogs() {
+				$.ajax({
+					url: 'http://localhost:5000/blogger/Blog',
+					method: 'GET',
+					success: function(data, status) {
+						for (var i = 0; i < data.length; i++) {
+							$("#blogs").append("<div id=\"" + data[i]._id.$oid + "\"><h3>By " + data[i].name + "</h3><button id=\"del_" + data[i]._id.$oid + "\" onclick=\"deleteBlog('" + data[i]._id.$oid + "');\">Delete</button><p>" + data[i].blog_text + "</p></div>");
+						}
+					}
+				});
+			}
+
+			function deleteBlog(blog_id) {
+				$.ajax({
+					url: 'http://localhost:5000/blogger/Blog/' + blog_id,
+					method: 'DELETE',
+					success: function(data, status) {
+						console.log('Submitted');
+						location.reload(); 
+					}
+				});
+			}
+
+			$(document).ready(function() {
+				getBlogs();
+			})
+		</script>
+	</head>
+
+	<body>
+		<marquee><h1>Blogger!</h1></marquee>
+		<h2>Add a blog!</h2>
+		<label for="author_name">Name:</label>
+		<input id="name" name="author_name">
+		<br/>
+		<label for="blog_text">Text:</label>
+		<textarea id="blog_text" name="blog_text" cols="40" rows="5"></textarea>
+		<br/>
+		<button id="submit_button" onclick="sendBlog();">Submit Blog!</button>
+		<h2>Blogs</h2>
+		<div id="blogs">
+
+		</div>
+	</body>
+</html>

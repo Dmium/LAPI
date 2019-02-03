@@ -65,12 +65,22 @@ def generate_controllers(project):
             f.write("from " + project + ".models." + modelname + " import " + modelname + ", " + modelname + "_schema, " + modelname + "_schemas\n\n")
             f.write("@app.route('/" + project + "/" + modelname + "', methods=['POST'])\n")
             f.write("def create_" + modelname + "():\n")
-            f.write("    db.session.add(" + modelname + "(**request.get_json()))\n")
+            f.write("    tempmodel = " + modelname + "(**request.get_json())\n")
+            f.write("    db.session.add(tempmodel)\n")
             f.write("    db.session.commit()\n")
-            f.write("    return jsonify(['ok'])\n\n")
+            f.write("    return jsonify(" + modelname + "_schema.dump(tempmodel))\n\n")
             f.write("@app.route('/" + project + "/" + modelname + "', methods=['GET'])\n")
             f.write("def read_" + modelname + "():\n")
             f.write("    return jsonify(" + modelname + "_schemas.dump(" + modelname + ".query.all()))\n\n")
+            f.write("@app.route('/" + project + "/" + modelname + "/<id>', methods=['GET'])\n")
+            f.write("def read_single_" + modelname + "(id):\n")
+            f.write("    return jsonify(" + modelname + "_schema.dump(" + modelname + ".query.filter_by(id = id).first()))\n\n")
+            f.write("@app.route('/" + project + "/" + modelname + "/<id>', methods=['DELETE'])\n")
+            f.write("def delete_" + modelname + "(id):\n")
+            f.write("    rdict = request.get_json()\n")
+            f.write("    db.session.delete(" + modelname + ".query.filter_by(id = rdict['id']).first())\n")
+            f.write("    db.session.commit()\n")
+            f.write("    return jsonify(['ok'])\n\n")
             f.close()
 
 def generate_configs(project):
@@ -90,7 +100,7 @@ def generate_configs(project):
     path = "../projects/src/" + project + "/" + project + "/"
     f = open(path + "__init__.py", "w+")
     # TODO Add Entities
-    f.write("from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_marshmallow import Marshmallow\nfrom flask_cors import CORS\n\napp = Flask(__name__)\napp.config.from_object('" + project + "config')\nCORS(app)\ndb = SQLAlchemy(app)\nma = Marshmallow(app)\n\nfrom test.controllers import index")
+    f.write("from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_marshmallow import Marshmallow\nfrom flask_cors import CORS\n\napp = Flask(__name__)\napp.config.from_object('" + project + "config')\nCORS(app)\ndb = SQLAlchemy(app)\nma = Marshmallow(app)\n\nfrom " + project + ".controllers import index")
     tempstr = ""
     for coll in mongo.db.collection_names():
         if coll.startswith(project):
@@ -101,15 +111,15 @@ def generate_configs(project):
     f.close()
     path = "../projects/src/" + project + "/" + project + "/controllers/"
     f = open(path + "__init__.py", "w+")
-    f.write("from test import app\n")
+    f.write("from " + project + " import app\n")
     f.close()
     f = open(path + "index.py", "w+")
     # TODO Add Entities
     f.write("from " + project + " import app, db\nfrom " + project + ".models import ")
-    print('test', tempstr)
+    print('" + project + "', tempstr)
     f.write(tempstr[:-2] + "\nfrom flask import jsonify\n\n@app.route('/config/init/')\ndef init_database():\n    db.drop_all()\n    db.create_all()\n    db.session.commit()\n    return jsonify(['ok'])\n")
     f.close()
     path = "../projects/src/" + project + "/" + project + "/models/"
     f = open(path + "__init__.py", "w+")
-    f.write("from test import app\n")
+    f.write("from " + project + " import app\n")
     f.close()
