@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ac012c81-37fd-4b3b-b234-d59d70e65c0a",
+		"_postman_id": "39ccc5ad-31b0-4c74-8ca7-6d110b592dba",
 		"name": "Test Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -72,14 +72,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
@@ -124,14 +124,14 @@
 					"raw": "{\n\t\"first_name\": \"Toby\",\n\t\"last_name\": \"Such\",\n\t\"age\": 20\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
@@ -172,14 +172,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
@@ -216,14 +216,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -268,14 +268,14 @@
 					"raw": "{\n\t\"first_name\": \"James\"\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -306,14 +306,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person/{{oid}}",
+					"raw": "localhost:5000/test/Person/{{oid}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person",
+						"Person",
 						"{{oid}}"
 					]
 				}
@@ -348,14 +348,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/person",
+					"raw": "localhost:5000/test/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"test",
-						"person"
+						"Person"
 					]
 				}
 			},
@@ -367,21 +367,21 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b9fc63f9-8a3a-4521-b3b2-0d23485c3f6f",
+						"id": "04d83cdd-ef98-4cd0-8e96-d3cf862cb222",
+						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"response is ok\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"pm.test(\"resonse is correct length\", function() {",
-							"    pm.expect(pm.response.json().test).to.have.length(1);",
+							"    pm.expect(pm.response.json()).to.have.length(1);",
 							"});",
 							"",
 							"pm.test(\"response has correct content\", function() {",
-							"    pm.expect(pm.response.json().test[0]).is.equal(\"person\");",
+							"    pm.expect(pm.response.json()[0]).is.equal(\"test\");",
 							"});"
-						],
-						"type": "text/javascript"
+						]
 					}
 				}
 			],
@@ -401,6 +401,52 @@
 					"port": "5000",
 					"path": [
 						"get_projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test get_types",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e18936a9-f7de-4c94-b40f-b35be491ab4b",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"resonse is correct length\", function() {",
+							"    pm.expect(pm.response.json()).to.have.length(1);",
+							"});",
+							"",
+							"pm.test(\"response has correct content\", function() {",
+							"    pm.expect(pm.response.json()[0]).is.equal(\"person\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:5000/get_types/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_types",
+						"test"
 					]
 				}
 			},
