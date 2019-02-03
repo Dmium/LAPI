@@ -22,8 +22,8 @@
                 var i;
                 for(i = 0;i<dataSplit.length;i++) {
                     var string = dataSplit[i].replace(/[\W_]+/g," ");
-                    var dropdown_option = $('<a class="btn btn-info" href="http://localhost:5000/generate/'+string+'" role="button">' + string +
-                        '</a>')
+                    var dropdown_option = $('<div class="row"><a class="btn btn-info" href="http://localhost:5000/generate/'+string+'" role="button">' + string +
+                        '</a></div class="row"><p></p>')
                     $('#buttonlist').append(dropdown_option);
                 }
             });
