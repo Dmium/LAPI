@@ -22,7 +22,7 @@
                 var i;
                 for(i = 0;i<dataSplit.length;i++) {
                     var string = dataSplit[i].replace(/[\W_]+/g," ");
-                    var dropdown_option = $('<a class="dropdown-item" href="#">' + string +
+                    var dropdown_option = $('<a id=' + string + ' class="dropdown-item" href="#" value="">' + string +
                         '</a>')
                     $('#dropdownmenu').append(dropdown_option);
                 }
@@ -43,10 +43,22 @@
                         </button>
                         <div id="dropdownmenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         </div>
+                        <script>
+                        $(function(){
+                            $("#dropdown-menu a").click(function(){
+                            $(".btn:first-child").attr('class','selected');
+                        });
+                        });
+
+                        function getSelected(){
+                            return $(".selected").val();
+                        }
+                        </script>
                     </div>
                 </div>
                 <div class="col">
-                    <button type="button" class="btn btn-primary">Generate project</button>
+                <button onclick="location.href='http://locahost:5000/generate/'+getSelected()" type="button">
+                    Generate project</button>
                 </div>
             </div>
         </div>
