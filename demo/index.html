@@ -26,9 +26,19 @@
 					method: 'GET',
 					success: function(data, status) {
 						for (var i = 0; i < data.length; i++) {
-							console.log(data[i])
-							$("#blogs").append("<h3>By " + data[i].name + "</h3><p>" + data[i].blog_text + "</p>");
+							$("#blogs").append("<div id=\"" + data[i]._id.$oid + "\"><h3>By " + data[i].name + "</h3><button id=\"del_" + data[i]._id.$oid + "\" onclick=\"deleteBlog('" + data[i]._id.$oid + "');\">Delete</button><p>" + data[i].blog_text + "</p></div>");
 						}
+					}
+				});
+			}
+
+			function deleteBlog(blog_id) {
+				$.ajax({
+					url: 'http://localhost:5000/blogger/blogs/' + blog_id,
+					method: 'DELETE',
+					success: function(data, status) {
+						console.log('Submitted');
+						location.reload(); 
 					}
 				});
 			}

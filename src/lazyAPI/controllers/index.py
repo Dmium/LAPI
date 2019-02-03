@@ -53,4 +53,4 @@ def update(project, type, oid): # replace appropriate fields
 @app.route('/<project>/<type>/<oid>', methods=['DELETE'])
 def delete(project, type, oid):
     mongo.db[str(project) + '/' + str(type)].delete_one({'_id':ObjectId(str(oid))})
-    return Response("", status=200, mimetype='application/json')
+    return jsonify(["ok"]);
