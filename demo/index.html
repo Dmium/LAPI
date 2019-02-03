@@ -6,7 +6,7 @@
 		<script>
 			function sendBlog() {
 				$.ajax({
-					url: 'http://localhost:5000/blogger/blogs',
+					url: 'http://localhost:5000/blogger/Blog',
 					method: 'POST',
 					data: JSON.stringify({
 						'name':$('#name').val(),
@@ -22,7 +22,7 @@
 
 			function getBlogs() {
 				$.ajax({
-					url: 'http://localhost:5000/blogger/blogs',
+					url: 'http://localhost:5000/blogger/Blog',
 					method: 'GET',
 					success: function(data, status) {
 						for (var i = 0; i < data.length; i++) {
@@ -34,7 +34,7 @@
 
 			function deleteBlog(blog_id) {
 				$.ajax({
-					url: 'http://localhost:5000/blogger/blogs/' + blog_id,
+					url: 'http://localhost:5000/blogger/Blog/' + blog_id,
 					method: 'DELETE',
 					success: function(data, status) {
 						console.log('Submitted');
