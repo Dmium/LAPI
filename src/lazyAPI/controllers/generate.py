@@ -100,7 +100,7 @@ def generate_configs(project):
     path = "../projects/src/" + project + "/" + project + "/"
     f = open(path + "__init__.py", "w+")
     # TODO Add Entities
-    f.write("from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_marshmallow import Marshmallow\nfrom flask_cors import CORS\n\napp = Flask(__name__)\napp.config.from_object('" + project + "config')\nCORS(app)\ndb = SQLAlchemy(app)\nma = Marshmallow(app)\n\nfrom test.controllers import index")
+    f.write("from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_marshmallow import Marshmallow\nfrom flask_cors import CORS\n\napp = Flask(__name__)\napp.config.from_object('" + project + "config')\nCORS(app)\ndb = SQLAlchemy(app)\nma = Marshmallow(app)\n\nfrom " + project + ".controllers import index")
     tempstr = ""
     for coll in mongo.db.collection_names():
         if coll.startswith(project):
@@ -111,15 +111,15 @@ def generate_configs(project):
     f.close()
     path = "../projects/src/" + project + "/" + project + "/controllers/"
     f = open(path + "__init__.py", "w+")
-    f.write("from test import app\n")
+    f.write("from " + project + " import app\n")
     f.close()
     f = open(path + "index.py", "w+")
     # TODO Add Entities
     f.write("from " + project + " import app, db\nfrom " + project + ".models import ")
-    print('test', tempstr)
+    print('" + project + "', tempstr)
     f.write(tempstr[:-2] + "\nfrom flask import jsonify\n\n@app.route('/config/init/')\ndef init_database():\n    db.drop_all()\n    db.create_all()\n    db.session.commit()\n    return jsonify(['ok'])\n")
     f.close()
     path = "../projects/src/" + project + "/" + project + "/models/"
     f = open(path + "__init__.py", "w+")
-    f.write("from test import app\n")
+    f.write("from " + project + " import app\n")
     f.close()
