@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Projects</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous"> 
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            jQuery.getJSON('http://localhost:5000/get_projects', function(data) {
+                console.log(data)
+                var dataSplit = JSON.stringify(data).split(",");
+                var i;
+                for(i = 0;i<dataSplit.length;i++) {
+                    var string = dataSplit[i].replace(/[\W_]+/g," ");
+                    var dropdown_option = $('<div class="row"><a class="btn btn-info" href="http://localhost:5000/generate/'+string+'" role="button">' + string +
+                        '</a></div class="row"><p></p>')
+                    $('#buttonlist').append(dropdown_option);
+                }
+            });
+        });
+    </script>
+  </head>
+  <body>
+    <h1>Projects</h1>
+
+    <div class="dropdown">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div id="buttonlist">
+                    </div>
+                </div>
+            </div>
+        </div>
+  </body>
+</html>
