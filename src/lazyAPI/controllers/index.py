@@ -5,52 +5,46 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 from lazyAPI.controllers import general
 
-@app.route('/get_projects')
-def get_projects():
-    return jsonify(general.get_projects())
-
-@app.route('/get_types/<project>')
-def get_types(project):
-    return jsonify(general.get_types(project))
+@app.route('/api/get_types')
+def get_types():
+    return jsonify(general.get_types('api'))
 
 @app.route('/')
 def index():
-    get_projects()
     return render_template("index.html")
 
-@app.route('/config/init/<project>')
-def init_database(project):
+@app.route('/api/config/init')
+def init_database():
     for coll in mongo.db.collection_names():
-        if coll.startswith(project):
+        if coll.startswith('api'):
             mongo.db[coll].drop()
     return 'Init complete'
 
-@app.route('/<project>/<type>', methods=['POST'])
-def create(project, type):
+@app.route('/api/<type>', methods=['POST'])
+def create(type):
     request_dict = request.get_json()
-    newobjid = mongo.db[str(project) + '/' + str(type)].insert_one(request_dict).inserted_id
-    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": newobjid})), status=200, mimetype='application/json')
+    newobjid = mongo.db['api/' + str(type)].insert_one(request_dict).inserted_id
+    return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": newobjid})), status=200, mimetype='application/json')
 
-@app.route('/<project>/<type>/<oid>', methods=['GET'])
-def read(project, type, oid):
-    print(oid)
-    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
+@app.route('/api/<type>/<oid>', methods=['GET'])
+def read(type, oid):
+    return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
 
-@app.route('/<project>/<type>', methods=['GET'])
-def read_all(project, type):
+@app.route('/api/<type>', methods=['GET'])
+def read_all(type):
     request_dict = request.get_json()
     if(request_dict == None):
-        return Response(dumps(mongo.db[str(project) + '/' + str(type)].find()), status=200, mimetype='application/json')
+        return Response(dumps(mongo.db['api/' + str(type)].find()), status=200, mimetype='application/json')
     else:
-        return Response(dumps(mongo.db[str(project) + '/' + str(type)].find(request_dict)), status=200, mimetype='application/json')
+        return Response(dumps(mongo.db['api/' + str(type)].find(request_dict)), status=200, mimetype='application/json')
 
-@app.route('/<project>/<type>/<oid>', methods=['PUT'])
-def update(project, type, oid): # replace appropriate fields
+@app.route('/api/<type>/<oid>', methods=['PUT'])
+def update(type, oid): # replace appropriate fields
     request_dict = request.get_json()
-    mongo.db[str(project) + '/' + str(type)].update_one({'_id':ObjectId(str(oid))}, {"$set": request_dict})
-    return Response(dumps(mongo.db[str(project) + '/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
+    mongo.db['api/' + str(type)].update_one({'_id':ObjectId(str(oid))}, {"$set": request_dict})
+    return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": ObjectId(str(oid))})), status=200, mimetype='application/json')
 
-@app.route('/<project>/<type>/<oid>', methods=['DELETE'])
-def delete(project, type, oid):
-    mongo.db[str(project) + '/' + str(type)].delete_one({'_id':ObjectId(str(oid))})
+@app.route('/api/<type>/<oid>', methods=['DELETE'])
+def delete(type, oid):
+    mongo.db['api/' + str(type)].delete_one({'_id':ObjectId(str(oid))})
     return jsonify(["ok"]);
