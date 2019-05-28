@@ -34,7 +34,7 @@ def create(typex):
     ctype = mongo.db['endpoints'].find_one({'name': typex})
     propertydict = {}
     for name, value in request_dict.items():
-        propertydict[name] = str(type(value)
+        propertydict[name] = str(type(value))
     if ctype != None:
         cid = ctype['_id']
         ctype['properties'].update(propertydict)
