@@ -18,9 +18,7 @@
         </template>
       </b-table>
     </div>
-    <h2>
-      eh
-    </h2>
+    <b-button variant="info" :to="{ name: 'overview'}">Back to Overview</a>
   </div>
 </template>
 <script>

@@ -15,9 +15,6 @@
         </template>
       </b-table>
     </div>
-    <h2>
-      eh
-    </h2>
   </div>
 </template>
 <script>
@@ -30,7 +27,7 @@ export default {
       fields: [
         { key: 'name', sortable: true },
         { key: 'seq', sortable: false },
-        { key: 'eh', label: 'First name and age' }
+        { key: 'eh', label: 'Configure' }
       ],
       errors: [],
       items: []
