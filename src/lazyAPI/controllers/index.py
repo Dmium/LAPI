@@ -34,6 +34,21 @@ def send_css(path):
 def get_index():
     return render_template("index.html")
 
+@app.route('/lapi/types')
+def lapi_types():
+    return Response(dumps(mongo.db['endpoints'].find({})))
+
+@app.route('/lapi/types/<name>')
+def lapi_type_info(name):
+    return Response(dumps(mongo.db['endpoints'].find_one({'name': name})), status=200, mimetype='application/json')
+
+@app.route('/lapi/types/<typename>/property/<propertyname>', methods=['DELETE'])
+def lapi_property_delete(typename, propertyname):
+    return Response(dumps(mongo.db['endpoints'].find_one_and_update(
+    { 'name': typename },
+    { '$unset': { 'properties.' + propertyname: ''} },
+    return_document=ReturnDocument.AFTER)), status=200, mimetype='application/json')
+
 @app.route('/api/config/init')
 def init_database():
     for coll in mongo.db.collection_names():
@@ -60,7 +75,7 @@ def create(typex):
         ctype['properties'].update(propertydict)
         mongo.db['endpoints'].replace_one({'_id': cid}, ctype)
         request_dict['_id'] = get_new_id(typex)
-    else :
+    else:
         mongo.db['endpoints'].insert_one({'name': typex, 'properties': propertydict, 'seq': 0})
         request_dict['_id'] = get_new_id(typex)
     newobjid = mongo.db['api/' + str(typex)].insert_one(request_dict).inserted_id
