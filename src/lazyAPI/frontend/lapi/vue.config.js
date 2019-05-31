@@ -1,5 +1,6 @@
 const path = require("path");
 
 module.exports = {
-  outputDir: path.resolve(__dirname, "../../views")
+  outputDir: path.resolve(__dirname, "../../views/lapi"),
+  publicPath: '/lapi'
   }
