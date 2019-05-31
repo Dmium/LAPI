@@ -10,7 +10,7 @@
       :sortDesc="true"
       :fields="fields">
       <template slot="merge" slot-scope="data">
-        <b-button variant="primary">Merge in</a>
+        <b-button variant="primary" @click="mergeProperty(data.item[0])">Merge in</a>
       </template>
     </b-table>
     <b-button variant="info" :to="{ name: 'typeview', params: {name: $route.params.typename } }">Back to Type</a>
@@ -50,6 +50,17 @@ export default {
       return Object.keys(dict).map(function (key) {
           return [key, dict[key]];
       });
+    },
+    mergeProperty: function (propname) {
+    axios.put('/lapi/types/' + this.$route.params.typename + '/property/merge/' + this.$route.params.propertyname + '/' + propname)
+      .then(response => {
+        // JSON responses are automatically parsed.
+        // this.items = this.toList(response.data.properties)
+        this.bam()
+      })
+      .catch(e => {
+        this.errors.push(e)
+      })
     }
   }
 }

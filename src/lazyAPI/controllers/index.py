@@ -49,6 +49,11 @@ def lapi_property_delete(typename, propertyname):
     { '$unset': { 'properties.' + propertyname: ''} },
     return_document=ReturnDocument.AFTER)), status=200, mimetype='application/json')
 
+@app.route('/lapi/types/<typename>/property/merge/<propertyname>/<mergedpropertyname>', methods=['PUT'])
+def lapi_property_merge(typename, propertyname, mergedpropertyname):
+    return lapi_property_delete(typename, mergedpropertyname)
+
+
 @app.route('/api/config/init')
 def init_database():
     for coll in mongo.db.collection_names():
