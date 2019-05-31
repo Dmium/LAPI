@@ -1,10 +1,5 @@
-from lazyAPI import app, mongo
-from flask import Flask, jsonify, request, Response, render_template, send_from_directory
-from bson import Binary, Code
-from bson.objectid import ObjectId
-from bson.json_util import dumps
-from lazyAPI.controllers import general
-from pymongo import ReturnDocument
+from lazyAPI import app
+from flask import Flask, render_template, send_from_directory
 
 @app.route('/img/<path:path>')
 def send_img(path):
