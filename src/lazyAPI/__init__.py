@@ -4,4 +4,4 @@ app = Flask(__name__, static_folder="views", template_folder="views")
 app.config.from_object('lazyAPIconfig')
 mongo = PyMongo(app)
 
-from lazyAPI.controllers import index, generate, general
+from lazyAPI.controllers import lapi_meta, custom_hooks, api, generate, general
