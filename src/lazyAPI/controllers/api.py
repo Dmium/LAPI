@@ -14,8 +14,8 @@ def get_types():
 @app.route('/api/config/init')
 def init_database():
     for coll in mongo.db.collection_names():
-        if coll.startswith('api'):
-            mongo.db[coll].drop()
+        mongo.db[coll].drop()
+    mongo.db['users'].insert_one({'_id': 'admin', 'phash': User.get_phash('password')})
     return 'Init complete'
 
 def get_new_id(typex):

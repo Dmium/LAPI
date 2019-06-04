@@ -1,14 +1,23 @@
 from lazyAPI import app, mongo
-from flask import Flask, jsonify, request, Response, render_template, send_from_directory
+from flask import Flask, jsonify, request, Response, render_template, send_from_directory, make_response
 from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from lazyAPI.controllers import general
 from pymongo import ReturnDocument
+from flask_login import login_required
+from flask_wtf.csrf import generate_csrf
+
+# @app.after_request
+# def set_xsrf_cookie(response):
+#     response.set_cookie('X-CSRF', generate_csrf())
+#     return response
 
 @app.route('/lapi')
 def lapi_index():
-    return render_template("lapi/index.html")
+    response = make_response(render_template("lapi/index.html"))
+    response.set_cookie('X-CSRF', generate_csrf())
+    return response
 
 @app.route('/lapi/<path:path>')
 def get_lapi_gui(path):

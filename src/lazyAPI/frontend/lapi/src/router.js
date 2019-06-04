@@ -30,6 +30,11 @@ export default new Router({
       path: '/typeview/:typename/property/:propertyname/merge',
       name: 'propertyview',
       component: () => import('./views/PropertyView.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('./views/Login.vue')
     }
   ]
 })

@@ -12,6 +12,7 @@
     "bootstrap-vue": "^2.0.0-rc.21",
     "core-js": "^2.6.5",
     "vue": "^2.6.10",
+    "vue-cookies": "^1.5.13",
     "vue-router": "^3.0.3"
   },
   "devDependencies": {

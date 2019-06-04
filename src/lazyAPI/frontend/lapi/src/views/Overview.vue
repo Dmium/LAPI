@@ -5,6 +5,7 @@
     </h1>
     <div id="Types">
       <p text-align="center">Types</p>
+      <input name="csrf_token" value="{{ csrf_token() }}" /> 
       <b-table striped hover
              :items="items"
              :sortBy="sortBy"

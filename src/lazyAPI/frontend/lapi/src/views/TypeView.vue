@@ -58,7 +58,7 @@ export default {
       });
     },
     deleteProperty: function (propname) {
-    axios.delete('/lapi/types/' + this.$route.params.name + '/property/' + propname)
+    this.$http.delete('/lapi/types/' + this.$route.params.name + '/property/' + propname)
       .then(response => {
         // JSON responses are automatically parsed.
         // this.items = this.toList(response.data.properties)

@@ -52,7 +52,7 @@ export default {
       });
     },
     mergeProperty: function (propname) {
-    axios.put('/lapi/types/' + this.$route.params.typename + '/property/merge/' + this.$route.params.propertyname + '/' + propname)
+    this.$http.put('/lapi/types/' + this.$route.params.typename + '/property/merge/' + this.$route.params.propertyname + '/' + propname)
       .then(response => {
         // JSON responses are automatically parsed.
         // this.items = this.toList(response.data.properties)

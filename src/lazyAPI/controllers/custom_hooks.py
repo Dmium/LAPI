@@ -1,1 +1,1 @@
-from lazyAPI.controllers import index
+from lazyAPI.controllers import index, custom_login
