@@ -1,17 +1,18 @@
 
-from lazyAPI import app, mongo
+from lazyAPI import app, mongo, csrf
 from flask import Flask, jsonify, request, Response, render_template, send_from_directory
 from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from lazyAPI.controllers import general
+from lazyAPI.models.User import User
 from pymongo import ReturnDocument
 
-@app.route('/api/get_types')
+@app.route(app.config['API_ENDPOINT'] + '/get_types')
 def get_types():
     return jsonify(general.get_types('api'))
 
-@app.route('/api/config/init')
+@app.route(app.config['API_ENDPOINT'] + '/config/init')
 def init_database():
     for coll in mongo.db.collection_names():
         mongo.db[coll].drop()
@@ -25,8 +26,10 @@ def get_new_id(typex):
     return_document=ReturnDocument.AFTER)['seq']
 
 
-@app.route('/api/<typex>', methods=['POST'])
+@app.route(app.config['API_ENDPOINT'] + '/<typex>', methods=['POST'])
+@csrf.exempt
 def create(typex):
+    print(request.headers)
     request_dict = request.get_json()
     ctype = mongo.db['endpoints'].find_one({'name': typex})
     propertydict = {}
@@ -43,11 +46,11 @@ def create(typex):
     newobjid = mongo.db['api/' + str(typex)].insert_one(request_dict).inserted_id
     return Response(dumps(mongo.db['api/' + str(typex)].find_one({"_id": newobjid})), status=200, mimetype='application/json')
 
-@app.route('/api/<type>/<_id>', methods=['GET'])
+@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['GET'])
 def read(type, _id):
     return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": int(_id)})), status=200, mimetype='application/json')
 
-@app.route('/api/<type>', methods=['GET'])
+@app.route(app.config['API_ENDPOINT'] + '/<type>', methods=['GET'])
 def read_all(type):
     request_dict = request.get_json()
     if(request_dict == None):
@@ -55,13 +58,13 @@ def read_all(type):
     else:
         return Response(dumps(mongo.db['api/' + str(type)].find(request_dict)), status=200, mimetype='application/json')
 
-@app.route('/api/<type>/<_id>', methods=['PUT'])
+@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['PUT'])
 def update(type, _id): # replace appropriate fields
     request_dict = request.get_json()
     mongo.db['api/' + str(type)].update_one({'_id':int(_id)}, {"$set": request_dict})
     return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": int(_id)})), status=200, mimetype='application/json')
 
-@app.route('/api/<type>/<_id>', methods=['DELETE'])
+@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['DELETE'])
 def delete(type, _id):
     mongo.db['api/' + str(type)].delete_one({'_id': int(_id)})
     return jsonify(["ok"]);
