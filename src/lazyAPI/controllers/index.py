@@ -1,6 +1,7 @@
 from lazyAPI import app
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, make_response
 from flask_login import login_required
+from flask_wtf.csrf import generate_csrf
 
 @app.route('/img/<path:path>')
 def send_img(path):
