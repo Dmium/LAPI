@@ -67,4 +67,4 @@ def update(type, _id): # replace appropriate fields
 @app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['DELETE'])
 def delete(type, _id):
     mongo.db['api/' + str(type)].delete_one({'_id': int(_id)})
-    return jsonify(["ok"]);
+    return jsonify(["ok"])
