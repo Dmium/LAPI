@@ -1,3 +1,6 @@
+"""
+Generates a project based on contents on the mongo database and developer settings
+"""
 from lazyAPI import app, mongo
 from flask import jsonify, request, Response
 from bson import Binary, Code

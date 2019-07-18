@@ -1,3 +1,8 @@
+"""
+Some simple methods for lapi
+
+may be depricated soon
+"""
 from lazyAPI import app, mongo
 from flask import jsonify, request, Response
 from bson import Binary, Code
