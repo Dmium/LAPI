@@ -32,10 +32,13 @@ def init_database():
 
 def get_new_id(typex):
     """
+    :param typex: typex is no longer needed. May depricate.
     gets a valid new sequential ID safely (avoids race conditions)
     """
-    return mongo.db['endpoints'].find_one_and_update(
-        {'name': typex},
+    if mongo.db['meta'].find_one({'name': 'seqno'}) is None:
+        mongo.db['meta'].insert_one({'name': 'seqno', 'seq': -1})
+    return mongo.db['meta'].find_one_and_update(
+        {'name': 'seqno'},
         {'$inc': {'seq': 1}},
         return_document=ReturnDocument.AFTER)['seq']
 
