@@ -10,8 +10,6 @@ class User(UserMixin):
     @staticmethod
     def load(id):
         userdata = mongo.db['users'].find_one({"_id": id})
-        print('test', userdata['_id'])
-        print(userdata['phash'])
         return User(id, userdata['phash'])
 
     def get_id(self):
