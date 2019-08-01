@@ -1,0 +1,50 @@
+{
+    "_embedded": {
+        "user": {
+            "_link": {
+                "self": {
+                    "href": "/api/User/5"
+                }
+            },
+            "id": 5,
+            "name": "Dom"
+        },
+        "cakes": [{
+                "_link": {
+                    "self": {
+                        "href": "/api/Cake/3"
+                    }
+                },
+                "id": 3,
+                "type": "Sponge"
+            },
+            {
+                "_link": {
+                    "self": {
+                        "href": "/api/Cake/5"
+                    }
+                },
+                "id": 5,
+                "type": "Fruit"
+            }
+        ]
+    },
+    "_link": {
+        "self": {
+            "href": "/api/userseatingcake/9"
+        },
+        "user": {
+            "href": "/api/user/5"
+        }
+    },
+    "cakes": [{
+            "id": 3
+        },
+        {
+            "id": 5
+        }
+    ],
+    "user": {
+        "id": 5
+    }
+}
