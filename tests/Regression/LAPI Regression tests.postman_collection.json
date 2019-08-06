@@ -1,7 +1,8 @@
 {
 	"info": {
-		"_postman_id": "39ccc5ad-31b0-4c74-8ca7-6d110b592dba",
-		"name": "Test Collection",
+		"_postman_id": "8d3b6f69-2e3a-4d08-a52c-0d0859e3e29b",
+		"name": "LAPI Regression tests",
+		"description": "Tests to check for regressions in core functionality",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -24,20 +25,16 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:5000/config/init/test",
+					"raw": "localhost:5000/api/config/init",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
+						"api",
 						"config",
-						"init",
-						"test"
+						"init"
 					]
 				},
 				"description": "Nukes the test database"
@@ -67,19 +64,45 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:5000/test/Person",
+					"raw": "localhost:5000/api/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get CSRF token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2cb6e248-a6e5-48e3-9d4d-cad0c458bef4",
+						"exec": [
+							"pm.environment.set(\"csrf-token\", decodeURIComponent(pm.cookies.get(\"X-CSRF\")))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/lapi",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"lapi"
 					]
 				}
 			},
@@ -93,6 +116,8 @@
 					"script": {
 						"id": "0087b640-99c2-4ac2-b2fb-7622588abbdb",
 						"exec": [
+							"x = pm.variables.get(\"csrf-token\");",
+							"console.log(x)",
 							"pm.test(\"response is ok\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -103,7 +128,7 @@
 							"    pm.expect(pm.response.json().age).to.equal(20);",
 							"})",
 							"",
-							"pm.globals.set(\"oid\", pm.response.json()._id.$oid);"
+							"pm.globals.set(\"_id\", pm.response.json()._id);"
 						],
 						"type": "text/javascript"
 					}
@@ -117,6 +142,11 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-CSRFTOKEN",
+						"value": "{{csrf-token}} ",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -124,13 +154,13 @@
 					"raw": "{\n\t\"first_name\": \"Toby\",\n\t\"last_name\": \"Such\",\n\t\"age\": 20\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/Person",
+					"raw": "localhost:5000/api/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person"
 					]
 				}
@@ -157,7 +187,7 @@
 							"    pm.expect(pm.response.json()[0].first_name).to.equal(\"Toby\");",
 							"    pm.expect(pm.response.json()[0].last_name).to.equal(\"Such\");",
 							"    pm.expect(pm.response.json()[0].age).to.equal(20);",
-							"    pm.expect(pm.response.json()[0]._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"    pm.expect(pm.response.json()[0]._id).to.equal(pm.globals.get(\"_id\"));",
 							"});"
 						],
 						"type": "text/javascript"
@@ -167,18 +197,14 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:5000/test/Person",
+					"raw": "localhost:5000/api/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person"
 					]
 				}
@@ -201,7 +227,7 @@
 							"    pm.expect(pm.response.json().first_name).to.equal(\"Toby\");",
 							"    pm.expect(pm.response.json().last_name).to.equal(\"Such\");",
 							"    pm.expect(pm.response.json().age).to.equal(20);",
-							"    pm.expect(pm.response.json()._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"    pm.expect(pm.response.json()._id).to.equal(pm.globals.get(\"_id\"));",
 							"});"
 						],
 						"type": "text/javascript"
@@ -211,20 +237,16 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:5000/test/Person/{{oid}}",
+					"raw": "localhost:5000/api/Person/{{_id}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person",
-						"{{oid}}"
+						"{{_id}}"
 					]
 				}
 			},
@@ -246,7 +268,7 @@
 							"    pm.expect(pm.response.json().first_name).to.equal(\"James\");",
 							"    pm.expect(pm.response.json().last_name).to.equal(\"Such\");",
 							"    pm.expect(pm.response.json().age).to.equal(20);",
-							"    pm.expect(pm.response.json()._id.$oid).to.equal(pm.globals.get(\"oid\"));",
+							"    pm.expect(pm.response.json()._id).to.equal(pm.globals.get(\"_id\"));",
 							"});"
 						],
 						"type": "text/javascript"
@@ -261,6 +283,11 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-CSRFTOKEN",
+						"value": "{{csrf-token}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -268,15 +295,15 @@
 					"raw": "{\n\t\"first_name\": \"James\"\n}"
 				},
 				"url": {
-					"raw": "localhost:5000/test/Person/{{oid}}",
+					"raw": "localhost:5000/api/Person/{{_id}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person",
-						"{{oid}}"
+						"{{_id}}"
 					]
 				}
 			},
@@ -300,21 +327,27 @@
 			],
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "X-CSRFTOKEN",
+						"value": "{{csrf-token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:5000/test/Person/{{oid}}",
+					"raw": "localhost:5000/api/Person/{{_id}}",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person",
-						"{{oid}}"
+						"{{_id}}"
 					]
 				}
 			},
@@ -343,64 +376,15 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:5000/test/Person",
+					"raw": "localhost:5000/api/Person",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"test",
+						"api",
 						"Person"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Test get_projects",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "04d83cdd-ef98-4cd0-8e96-d3cf862cb222",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"response is ok\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"resonse is correct length\", function() {",
-							"    pm.expect(pm.response.json()).to.have.length(1);",
-							"});",
-							"",
-							"pm.test(\"response has correct content\", function() {",
-							"    pm.expect(pm.response.json()[0]).is.equal(\"test\");",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://localhost:5000/get_projects",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"get_projects"
 					]
 				}
 			},
@@ -413,7 +397,6 @@
 					"listen": "test",
 					"script": {
 						"id": "e18936a9-f7de-4c94-b40f-b35be491ab4b",
-						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"response is ok\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -424,29 +407,26 @@
 							"});",
 							"",
 							"pm.test(\"response has correct content\", function() {",
-							"    pm.expect(pm.response.json()[0]).is.equal(\"person\");",
+							"    pm.expect(pm.response.json()[0]).is.equal(\"Person\");",
 							"});"
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "http://localhost:5000/get_types/test",
+					"raw": "http://localhost:5000/api/get_types",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
-						"get_types",
-						"test"
+						"api",
+						"get_types"
 					]
 				}
 			},

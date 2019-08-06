@@ -53,7 +53,6 @@ def create(typex):
 
     Returns new object with generated ID
     """
-    print(request.headers)
     request_dict = request.get_json()
     ctype = mongo.db['endpoints'].find_one({'name': typex})
     propertydict = {}
@@ -92,6 +91,8 @@ def read_all(type):
 
     Returns all objects of a specified type
     """
+    for arg in request.args:
+         print(arg + ':', request.args[arg])
     request_dict = request.get_json()
     if(request_dict == None):
         return Response(dumps(mongo.db['api/' + str(type)].find()), status=200, mimetype='application/json')
