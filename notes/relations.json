@@ -33,6 +33,13 @@
         "self": {
             "href": "/api/userseatingcake/9"
         },
+        "cakes": [{
+                "href": "/api/Cake/3"
+            },
+            {
+                "href": "/api/Cake/5"
+            }
+        ],
         "user": {
             "href": "/api/user/5"
         }
