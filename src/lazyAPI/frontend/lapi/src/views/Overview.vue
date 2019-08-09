@@ -14,6 +14,10 @@
          <template slot="eh" slot-scope="data">
            <b-button variant="info" :to="{ name: 'typeview', params: {name: data.item.name } }">Configure</a>
         </template>
+
+         <template slot="ehrel" slot-scope="data">
+           <b-button variant="info" :to="{ name: 'relationshipview', params: {name: data.item.name } }">Configure</a>
+        </template>
       </b-table>
     </div>
   </div>
@@ -28,7 +32,8 @@ export default {
       fields: [
         { key: 'name', sortable: true },
         { key: 'seq', sortable: false },
-        { key: 'eh', label: 'Configure' }
+        { key: 'eh', label: 'Configure Properties' },
+        { key: 'ehrel', label: 'Configure Relationships' }
       ],
       errors: [],
       items: []

@@ -50,7 +50,6 @@ def lapi_type_info(name):
     """
     return Response(dumps(mongo.db['endpoints'].find_one({'name': name})), status=200, mimetype='application/json')
 
-
 @app.route('/lapi/types/<typename>/property/<propertyname>', methods=['DELETE'])
 def lapi_property_delete(typename, propertyname):
     """
@@ -70,3 +69,17 @@ def lapi_property_merge(typename, propertyname, mergedpropertyname):
     Will merge properites into other properties later. Currently just deletes a property
     """
     return lapi_property_delete(typename, mergedpropertyname)
+
+@app.route('/lapi/types/<typename>/relationships/<relfieldname>', methods=['POST'])
+def lapi_relationship_reveal(typename, relfieldname):
+    """
+    Names and reveals implied relationships
+    """
+    relmodel = mongo.db['endpoints'].find_one({'name': typename})
+    for relationship in relmodel['impliedrelationships']:
+        if relationship['relfieldname'] == relfieldname:
+            relationship['fieldname'] = request.get_json()['fieldname']
+            break
+    mongo.db['endpoints'].find_one_and_update({"_id": relmodel['_id']}, 
+                                {"$set": {"impliedrelationships": relmodel['impliedrelationships']}})
+    return lapi_type_info(typename)

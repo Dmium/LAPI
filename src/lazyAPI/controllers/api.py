@@ -42,27 +42,53 @@ def get_new_id(modelname):
         {'$inc': {'seq': 1}},
         return_document=ReturnDocument.AFTER)['seq']
 
-def match_relationships(record, modelname):
+def match_relationships(record, modelname, depth=2):
     cmodel = mongo.db['endpoints'].find_one({'name': modelname})
-    if 'relationships' in cmodel:
-        record['_embedded'] = {}
-        record['_link'] = {
-            'self': {
-                'href': '/api/' + modelname + '/' + str(record['_id'])
-            }
+    record['_link'] = {
+        'self': {
+            'href': '/api/' + modelname + '/' + str(record['_id'])
         }
+    }
+    record['_embedded'] = {}
+    if 'relationships' in cmodel:
         for fieldname, relmodelname in cmodel['relationships'].items():
             record['_embedded'][fieldname] = mongo.db[relmodelname].find_one({'_id': record[fieldname]['_id']})
             record['_link'][fieldname] = {
-                'href': '/' + relmodelname + '/' + str(record['_id'])
+                'href': '/' + relmodelname + '/' + str(record[fieldname]['_id'])
             }
-    #TODO one to many
+    if depth >= 0:
+        if 'impliedrelationships' in cmodel:
+            for relationship in cmodel['impliedrelationships']:
+                if 'fieldname' in relationship:
+                    record['_embedded'][relationship['fieldname']] = group_match_relationships(mongo.db['api/' + relationship['relmodelname']].find({relationship['relfieldname']: {'_id': record['_id']}}), relationship['relmodelname'], depth)
+                    record['_link'][relationship['fieldname']] = []
+                    for item in record['_embedded'][relationship['fieldname']]:
+                        record['_link'][relationship['fieldname']].append({'href': '/api/' +relationship['relmodelname'] + '/' + str(item['_id'])})
+        if record['_embedded'] == {}:
+            del(record['_embedded'])
     return record
+
+def group_match_relationships(group, modelname, depth=2):
+    resolved_records = []
+    for record in group:
+        resolved_records.append(match_relationships(record, modelname, depth=depth - 1))
+    return resolved_records
 
 def handle_relationship(rel_dict, modelname, cmodel, fieldname):
     if 'relationships' not in cmodel:
         cmodel['relationships'] = {}
-    cmodel['relationships'][fieldname] =  general.search_by_id(rel_dict['_id'])
+    if fieldname not in cmodel['relationships']:
+        cmodel['relationships'][fieldname] =  general.search_by_id(rel_dict['_id'])
+        relmodel = mongo.db['endpoints'].find_one({'name': cmodel['relationships'][fieldname].split('api/')[1]})
+        if 'impliedrelationships' not in relmodel:
+            relmodel['impliedrelationships'] = []
+        relmodel['impliedrelationships'].append({
+            'relmodelname': modelname,
+            'relfieldname': fieldname
+        })
+        mongo.db['endpoints'].find_one_and_update({"_id": relmodel['_id']}, 
+                                 {"$set": {"impliedrelationships": relmodel['impliedrelationships']}})
+        
 
 def handle_properties(request_dict, modelname):
     """
@@ -115,8 +141,8 @@ def create(modelname):
     return Response(dumps(match_relationships(mongo.db['api/' + str(modelname)].find_one({"_id": newobjid}), modelname)), status=200, mimetype='application/json')
 
 
-@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['GET'])
-def read(type, _id):
+@app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['GET'])
+def read(modelname, _id):
     """
     CRUD Read. Matches GET request of REST.
 
@@ -124,11 +150,11 @@ def read(type, _id):
 
     Returns matching object
     """
-    return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": int(_id)})), status=200, mimetype='application/json')
+    return Response(dumps(match_relationships(mongo.db['api/' + str(modelname)].find_one({"_id": int(_id)}), modelname)), status=200, mimetype='application/json')
 
 
-@app.route(app.config['API_ENDPOINT'] + '/<type>', methods=['GET'])
-def read_all(type):
+@app.route(app.config['API_ENDPOINT'] + '/<modelname>', methods=['GET'])
+def read_all(modelname):
     """
     Matches CRUD Read again.
 
@@ -138,13 +164,13 @@ def read_all(type):
          print(arg + ':', request.args[arg])
     request_dict = request.get_json()
     if(request_dict is None):
-        return Response(dumps(mongo.db['api/' + str(type)].find()), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(), modelname)), status=200, mimetype='application/json')
     else:
-        return Response(dumps(mongo.db['api/' + str(type)].find(request_dict)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(request_dict), modelname)), status=200, mimetype='application/json')
 
 
-@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['PUT'])
-def update(type, _id):  # replace appropriate fields
+@app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['PUT'])
+def update(modelname, _id):  # replace appropriate fields
     """
     Matches CRUD Update and REST PUT
 
@@ -154,12 +180,12 @@ def update(type, _id):  # replace appropriate fields
     """
     request_dict = request.get_json()
     mongo.db['api/' +
-             str(type)].update_one({'_id': int(_id)}, {"$set": request_dict})
-    return Response(dumps(mongo.db['api/' + str(type)].find_one({"_id": int(_id)})), status=200, mimetype='application/json')
+             str(modelname)].update_one({'_id': int(_id)}, {"$set": request_dict})
+    return Response(dumps(match_relationships(mongo.db['api/' + str(modelname)].find_one({"_id": int(_id)}), modelname)), status=200, mimetype='application/json')
 
 
-@app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['DELETE'])
-def delete(type, _id):
+@app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['DELETE'])
+def delete(modelname, _id):
     """
     CRUD Delete. REST DELETE.
 
@@ -167,5 +193,5 @@ def delete(type, _id):
 
     Returns "OK" in a json array for some reason.
     """
-    mongo.db['api/' + str(type)].delete_one({'_id': int(_id)})
+    mongo.db['api/' + str(modelname)].delete_one({'_id': int(_id)})
     return jsonify(["ok"])
