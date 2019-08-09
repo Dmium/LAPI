@@ -30,9 +30,9 @@ def init_database():
     return 'Init complete'
 
 
-def get_new_id(typex):
+def get_new_id(modelname):
     """
-    :param typex: typex is no longer needed. May depricate.
+    :param modelname: modelname is no longer needed due to globally sequential IDs. May depricate.
     gets a valid new sequential ID safely (avoids race conditions)
     """
     if mongo.db['meta'].find_one({'name': 'seqno'}) is None:
@@ -42,34 +42,77 @@ def get_new_id(typex):
         {'$inc': {'seq': 1}},
         return_document=ReturnDocument.AFTER)['seq']
 
+def match_relationships(record, modelname):
+    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+    if 'relationships' in cmodel:
+        record['_embedded'] = {}
+        record['_link'] = {
+            'self': {
+                'href': '/api/' + modelname + '/' + str(record['_id'])
+            }
+        }
+        for fieldname, relmodelname in cmodel['relationships'].items():
+            record['_embedded'][fieldname] = mongo.db[relmodelname].find_one({'_id': record[fieldname]['_id']})
+            record['_link'][fieldname] = {
+                'href': '/' + relmodelname + '/' + str(record['_id'])
+            }
+    #TODO one to many
+    return record
 
-@app.route(app.config['API_ENDPOINT'] + '/<typex>', methods=['POST'])
+def handle_relationship(rel_dict, modelname, cmodel, fieldname):
+    if 'relationships' not in cmodel:
+        cmodel['relationships'] = {}
+    cmodel['relationships'][fieldname] =  general.search_by_id(rel_dict['_id'])
+
+def handle_properties(request_dict, modelname):
+    """
+    :param request_dict:
+    :param modelname:
+    Stores information about properties of a model for later code generation
+    """
+    # Get known info about a model
+    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+
+    # Format a dictionary to match the endpoints info
+    propertydict = {}
+    relationshipdict = {}
+    for name, value in request_dict.items():
+        propertytype = str(type(value))
+        if propertytype == str(type({})):
+            relationshipdict[name] = value
+        else:
+            propertydict[name] = str(type(value))
+
+    if cmodel is None:
+        # If no info is known create a new endpoint
+        mongo.db['endpoints'].insert_one(
+            {'name': modelname, 'properties': propertydict, 'seq': 0})
+        request_dict['_id'] = get_new_id(modelname)
+    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+    for name, value in relationshipdict.items():
+        handle_relationship(value, modelname, cmodel, name)
+    # Otherwise update the previous endpoint with any new information
+    cid = cmodel['_id']
+    cmodel['properties'].update(propertydict)
+    mongo.db['endpoints'].replace_one({'_id': cid}, cmodel)
+    request_dict['_id'] = get_new_id(modelname)
+
+@app.route(app.config['API_ENDPOINT'] + '/<modelname>', methods=['POST'])
 @csrf.exempt
-def create(typex):
+def create(modelname):
     """
     CRUD Create. Matches POST request with json.
 
-    :param typex: name of what will become the class name
+    :param modelname: name of what will become the class name
 
     Returns new object with generated ID
     """
     request_dict = request.get_json()
-    ctype = mongo.db['endpoints'].find_one({'name': typex})
-    propertydict = {}
-    for name, value in request_dict.items():
-        propertydict[name] = str(type(value))
-    if ctype != None:
-        cid = ctype['_id']
-        ctype['properties'].update(propertydict)
-        mongo.db['endpoints'].replace_one({'_id': cid}, ctype)
-        request_dict['_id'] = get_new_id(typex)
-    else:
-        mongo.db['endpoints'].insert_one(
-            {'name': typex, 'properties': propertydict, 'seq': 0})
-        request_dict['_id'] = get_new_id(typex)
+    handle_properties(request_dict, modelname)
     newobjid = mongo.db['api/' +
-                        str(typex)].insert_one(request_dict).inserted_id
-    return Response(dumps(mongo.db['api/' + str(typex)].find_one({"_id": newobjid})), status=200, mimetype='application/json')
+                        str(modelname)].insert_one(request_dict).inserted_id
+    
+    return Response(dumps(match_relationships(mongo.db['api/' + str(modelname)].find_one({"_id": newobjid}), modelname)), status=200, mimetype='application/json')
 
 
 @app.route(app.config['API_ENDPOINT'] + '/<type>/<_id>', methods=['GET'])
@@ -94,7 +137,7 @@ def read_all(type):
     for arg in request.args:
          print(arg + ':', request.args[arg])
     request_dict = request.get_json()
-    if(request_dict == None):
+    if(request_dict is None):
         return Response(dumps(mongo.db['api/' + str(type)].find()), status=200, mimetype='application/json')
     else:
         return Response(dumps(mongo.db['api/' + str(type)].find(request_dict)), status=200, mimetype='application/json')

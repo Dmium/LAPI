@@ -9,6 +9,16 @@ from bson import Binary, Code
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
+def search_by_id(id):
+    for coll in mongo.db.collection_names():
+        print(coll)
+        if coll.startswith('api/'):
+            print(coll)
+            item = mongo.db[coll].find_one({"_id": int(id)})
+            print(item)
+            if item is not None:
+                return coll
+
 def get_projects():
     project = []
     for coll in mongo.db.collection_names():
