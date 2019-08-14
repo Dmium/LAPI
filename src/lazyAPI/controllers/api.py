@@ -164,9 +164,9 @@ def read_all(modelname):
          print(arg + ':', request.args[arg])
     request_dict = request.get_json()
     if(request_dict is None):
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(), modelname)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(), modelname, depth=1)), status=200, mimetype='application/json')
     else:
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(request_dict), modelname)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(request_dict), modelname, depth=1)), status=200, mimetype='application/json')
 
 
 @app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['PUT'])
