@@ -88,7 +88,11 @@ def handle_relationship(rel_dict, modelname, cmodel, fieldname):
         })
         mongo.db['endpoints'].find_one_and_update({"_id": relmodel['_id']}, 
                                  {"$set": {"impliedrelationships": relmodel['impliedrelationships']}})
-        
+
+def check_float(cmodel, propertyname, propertytype):
+    if cmodel is not None and cmodel['properties'][propertyname] == "<class 'float'>":
+        return "<class 'float'>"
+    return propertytype
 
 def handle_properties(request_dict, modelname):
     """
@@ -106,15 +110,17 @@ def handle_properties(request_dict, modelname):
         propertytype = str(type(value))
         if propertytype == str(type({})):
             relationshipdict[name] = value
+        elif propertytype == "<class 'int'>":
+            propertydict[name] = check_float(cmodel, name, propertytype)
         else:
-            propertydict[name] = str(type(value))
+            propertydict[name] = propertytype
 
     if cmodel is None:
         # If no info is known create a new endpoint
         mongo.db['endpoints'].insert_one(
             {'name': modelname, 'properties': propertydict, 'seq': 0})
         request_dict['_id'] = get_new_id(modelname)
-    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+        cmodel = mongo.db['endpoints'].find_one({'name': modelname})
     for name, value in relationshipdict.items():
         handle_relationship(value, modelname, cmodel, name)
     # Otherwise update the previous endpoint with any new information
@@ -126,9 +132,10 @@ def handle_properties(request_dict, modelname):
 def castarg(cmodel, argname, arg):
     # TODO handle for _id
     if argname in cmodel['properties']:
-        print(argname, arg)
         if cmodel['properties'][argname] == "<class 'int'>":
             return int(arg)
+        if cmodel['properties'][argname] == "<class 'float'>":
+            return float(arg)
         elif cmodel['properties'][argname] == "<class 'bool'>":
             return bool(arg)
         else:
