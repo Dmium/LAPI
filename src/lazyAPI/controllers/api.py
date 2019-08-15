@@ -123,6 +123,31 @@ def handle_properties(request_dict, modelname):
     mongo.db['endpoints'].replace_one({'_id': cid}, cmodel)
     request_dict['_id'] = get_new_id(modelname)
 
+def castarg(cmodel, argname, arg):
+    # TODO handle for _id
+    if argname in cmodel['properties']:
+        print(argname, arg)
+        if cmodel['properties'][argname] == "<class 'int'>":
+            return int(arg)
+        elif cmodel['properties'][argname] == "<class 'bool'>":
+            return bool(arg)
+        else:
+            return arg
+
+def generate_query(args, modelname):
+    # TODO Swap splitargs query convention around?
+    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+    querydict = {}
+    for arg in args:    
+        splitarg = arg.split(';')
+        if splitarg[0] == 'gt':
+            querydict[splitarg[1]] = { '$gt': castarg(cmodel, splitarg[1], args[arg]) }
+        elif splitarg[0] == 'lt':
+            querydict[splitarg[1]] = { '$lt': castarg(cmodel, splitarg[1], args[arg]) }
+        else:
+            querydict[splitarg[0]] = castarg(cmodel, splitarg[0], args[arg])
+    return querydict
+
 @app.route(app.config['API_ENDPOINT'] + '/<modelname>', methods=['POST'])
 @csrf.exempt
 def create(modelname):
@@ -160,13 +185,11 @@ def read_all(modelname):
 
     Returns all objects of a specified type
     """
-    for arg in request.args:
-         print(arg + ':', request.args[arg])
     request_dict = request.get_json()
     if(request_dict is None):
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(), modelname, depth=1)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(generate_query(request.args, modelname)), modelname, depth=1)), status=200, mimetype='application/json')
     else:
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(request_dict), modelname, depth=1)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(generate_query(request.args, modelname)), modelname, depth=1)), status=200, mimetype='application/json')
 
 
 @app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['PUT'])
