@@ -88,7 +88,11 @@ def handle_relationship(rel_dict, modelname, cmodel, fieldname):
         })
         mongo.db['endpoints'].find_one_and_update({"_id": relmodel['_id']}, 
                                  {"$set": {"impliedrelationships": relmodel['impliedrelationships']}})
-        
+
+def check_float(cmodel, propertyname, propertytype):
+    if cmodel is not None and propertyname in cmodel['properties'] and cmodel['properties'][propertyname] == "<class 'float'>":
+        return "<class 'float'>"
+    return propertytype
 
 def handle_properties(request_dict, modelname):
     """
@@ -106,15 +110,17 @@ def handle_properties(request_dict, modelname):
         propertytype = str(type(value))
         if propertytype == str(type({})):
             relationshipdict[name] = value
+        elif propertytype == "<class 'int'>":
+            propertydict[name] = check_float(cmodel, name, propertytype)
         else:
-            propertydict[name] = str(type(value))
+            propertydict[name] = propertytype
 
     if cmodel is None:
         # If no info is known create a new endpoint
         mongo.db['endpoints'].insert_one(
             {'name': modelname, 'properties': propertydict, 'seq': 0})
         request_dict['_id'] = get_new_id(modelname)
-    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+        cmodel = mongo.db['endpoints'].find_one({'name': modelname})
     for name, value in relationshipdict.items():
         handle_relationship(value, modelname, cmodel, name)
     # Otherwise update the previous endpoint with any new information
@@ -122,6 +128,32 @@ def handle_properties(request_dict, modelname):
     cmodel['properties'].update(propertydict)
     mongo.db['endpoints'].replace_one({'_id': cid}, cmodel)
     request_dict['_id'] = get_new_id(modelname)
+
+def castarg(cmodel, argname, arg):
+    # TODO handle for _id
+    if argname in cmodel['properties']:
+        if cmodel['properties'][argname] == "<class 'int'>":
+            return int(arg)
+        if cmodel['properties'][argname] == "<class 'float'>":
+            return float(arg)
+        elif cmodel['properties'][argname] == "<class 'bool'>":
+            return bool(arg)
+        else:
+            return arg
+
+def generate_query(args, modelname):
+    # TODO Swap splitargs query convention around?
+    cmodel = mongo.db['endpoints'].find_one({'name': modelname})
+    querydict = {}
+    for arg in args:    
+        splitarg = arg.split(';')
+        if splitarg[0] == 'gt':
+            querydict[splitarg[1]] = { '$gt': castarg(cmodel, splitarg[1], args[arg]) }
+        elif splitarg[0] == 'lt':
+            querydict[splitarg[1]] = { '$lt': castarg(cmodel, splitarg[1], args[arg]) }
+        else:
+            querydict[splitarg[0]] = castarg(cmodel, splitarg[0], args[arg])
+    return querydict
 
 @app.route(app.config['API_ENDPOINT'] + '/<modelname>', methods=['POST'])
 @csrf.exempt
@@ -160,13 +192,11 @@ def read_all(modelname):
 
     Returns all objects of a specified type
     """
-    for arg in request.args:
-         print(arg + ':', request.args[arg])
     request_dict = request.get_json()
     if(request_dict is None):
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(), modelname, depth=1)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(generate_query(request.args, modelname)), modelname, depth=1)), status=200, mimetype='application/json')
     else:
-        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(request_dict), modelname, depth=1)), status=200, mimetype='application/json')
+        return Response(dumps(group_match_relationships(mongo.db['api/' + str(modelname)].find(generate_query(request.args, modelname)), modelname, depth=1)), status=200, mimetype='application/json')
 
 
 @app.route(app.config['API_ENDPOINT'] + '/<modelname>/<_id>', methods=['PUT'])
