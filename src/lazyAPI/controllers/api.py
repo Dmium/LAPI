@@ -90,7 +90,7 @@ def handle_relationship(rel_dict, modelname, cmodel, fieldname):
                                  {"$set": {"impliedrelationships": relmodel['impliedrelationships']}})
 
 def check_float(cmodel, propertyname, propertytype):
-    if cmodel is not None and cmodel['properties'][propertyname] == "<class 'float'>":
+    if cmodel is not None and propertyname in cmodel['properties'] and cmodel['properties'][propertyname] == "<class 'float'>":
         return "<class 'float'>"
     return propertytype
 
