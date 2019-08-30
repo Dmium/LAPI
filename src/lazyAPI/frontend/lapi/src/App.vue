@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    csx: {{ CSTOKENA }}
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
@@ -10,15 +9,6 @@
     <router-view/>
   </div>
 </template>
-<script>
-export default {
-  data () {
-    return {
-      CSTOKENA: $cookies.get("X-CSRF")
-    }
-  }
-}
-</script>
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
